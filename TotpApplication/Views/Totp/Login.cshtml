@@ -1,0 +1,23 @@
+﻿@{
+    ViewBag.Title = "TOTP Validation";
+}
+
+<h2>Login</h2>
+<h4>@ViewBag.SecretKey</h4>
+@if (ViewBag.ErrorMessage != null)
+{
+    <p style="color: red;">@ViewBag.ErrorMessage</p>
+}
+
+@using (Html.BeginForm("Validate", "Totp", FormMethod.Post))
+{
+    <div>
+        <label for="code">Enter the code from your authenticator app: </label>
+        <input type="text" id="code" name="code" required />
+    </div>
+    <div class="mt-3">
+        <label for="secretKey">Enter the secretKey: </label>
+        <input type="text" id="secretKey" name="secretKey" required />
+    </div>
+    <button type="submit">Submit</button>
+}

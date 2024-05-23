@@ -1,0 +1,5 @@
+TotpApplication/obj/
+TotpApplication/TotpApplication/.vs/
+TotpApplication/wwwroot/lib/
+TotpApplication/bin/
+.vs/
