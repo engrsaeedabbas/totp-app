@@ -5,9 +5,9 @@ namespace TotpApplication.Controllers
 {
     public class TotpController : Controller
     {
-        public ActionResult Setup(string secretKey)
+        public ActionResult Setup(string id)
         {
-            var uri = TotpHelper.GenerateQrCodeUri(secretKey, User.Identity.Name);
+            var uri = TotpHelper.GenerateQrCodeUri(id, User.Identity.Name);
             var qrCodeImage = TotpHelper.GenerateQrCode(uri);
             ViewBag.QrCodeImage = Convert.ToBase64String(qrCodeImage);
             return View();
