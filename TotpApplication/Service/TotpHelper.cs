@@ -3,32 +3,31 @@ using QRCoder;
 using System;
 using System.Drawing;
 using System.IO;
+using System.Security.Principal;
 using static QRCoder.PayloadGenerator;
 
 namespace TotpApplication.Service
 {
     public class TotpHelper
     {
+        private const string _issuer = "TOTP_App";
+        private const int _keyLength = 8;
         public static string GenerateSecretKey()
         {
-            var key = KeyGeneration.GenerateRandomKey(20);
+            var key = KeyGeneration.GenerateRandomKey(_keyLength);
             return Base32Encoding.ToString(key);
         }
 
-        public static string GenerateQrCodeUri(string secretKey, string account)
+        public static string GenerateQrCodeImage(string secretKey, string account)
         {
-            string issuer = "YourAppName";
-            return $"otpauth://totp/{issuer}:{account}?secret={secretKey}&issuer={issuer}&digits=6";
-        }
+            var uri = $"otpauth://totp/{_issuer}:{account}?secret={secretKey}&issuer={_issuer}&digits=6";
 
-        public static byte[] GenerateQrCode(string uri)
-        {
             using var qrGenerator = new QRCodeGenerator();
             var qrCodeData = qrGenerator.CreateQrCode(uri, QRCodeGenerator.ECCLevel.Q);
             using PngByteQRCode qrCode = new(qrCodeData);
             byte[] qrCodeImage = qrCode.GetGraphic(5);
 
-            return qrCodeImage;
+            return Convert.ToBase64String(qrCodeImage);
         }
 
         public static bool ValidateTotp(string secretKey, string code)

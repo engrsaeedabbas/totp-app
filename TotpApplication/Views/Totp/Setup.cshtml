@@ -1,8 +1,48 @@
 ﻿@{
-    ViewBag.Title = "TOTP Setup";
+    ViewBag.Title = "Setup & Validateion Page";
 }
 
-<h2>TOTP Setup</h2>
+@using (Html.BeginForm("Setup", "Totp", FormMethod.Post))
+{
 
-<p>Scan this QR code with your authenticator app:</p>
-<img src="data:image/png;base64,@ViewBag.QrCodeImage" alt="QR Code" />
+    <h3>Step 1: TOTP Setup</h3>
+
+    <p>Scan this QR code with your authenticator app:</p>
+
+    <div>
+
+        <img src="data:image/png;base64,@ViewBag.QrCodeImage" alt="QR Code" />
+
+    </div>
+    <br/>
+    <div>
+
+        <h3> Step 2: Code Validation</h3>
+
+        <p>Provide latest code from your authenticator app:</p>
+
+        <input type="text" id="code" name="code" required />
+
+        <button type="submit">Submit</button>
+
+    </div>
+
+    <div>
+        @{
+            if (ViewBag.IsValidated)
+            {
+                if (ViewBag.IsTotpValidated)
+                {
+                    <p style="color: green;">Code Validated Successfully</p>
+                }
+                else
+                {
+                    <p style="color: red;">Code Validation Failed</p>
+                }
+            }
+        }
+    </div>
+}
+
+
+
