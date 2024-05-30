@@ -7,7 +7,8 @@
         public string Email { get; set; }
         public string Password { get; set; }
         public string SecretKey { get; set; }
-        public bool IsTotopEnabled { get; set; }
+        public bool IsTotpEnabled { get; set; }
+        public bool IsCodeValidated { get; set; }
     }  
 
 }

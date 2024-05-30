@@ -1,0 +1,105 @@
+﻿<form id="codeValidationForm">
+    @if (Model.IsNewSecretKey)
+    {
+        <h3>Step 1: TOTP Setup</h3>
+
+        <p>Scan this QR code with your authenticator app:</p>
+
+        <img src="data:image/png;base64,@Model.QrCodeImage" alt="QR Code" />
+
+        <input type="hidden" class="form-control" id="sKey" name="sKey" value="@Model.SecretKey">
+
+        <h3>Step 2: Code Validation</h3>
+
+        <p>Provide the latest code from your authenticator app:</p>
+    }
+    else
+    {
+        <h3>Code Validation</h3>
+
+        <p>Provide the latest code from your authenticator app:</p>
+
+        <input type="hidden" class="form-control" id="sKey" name="sKey" value="@Model.SecretKey">
+    }
+    <div class="mb-3 row">
+        <div class="col-auto">
+            <input type="text" id="code" name="code" required />
+            <div id="errorContainer" style="color: red; display: none;"></div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-auto">
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+    </div>
+
+</form>
+
+<div id="validationMessage">
+    @if (Model.IsValidated != null)
+    {
+        <div>
+            @if (Model.IsTotpValidated)
+            {
+                <p style="color: green;">Code Validated Successfully</p>
+            }
+            else
+            {
+                <p style="color: red;">Code Validation Failed</p>
+            }
+        </div>
+    }
+</div>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            $('#codeValidationForm').submit(function (event) {
+                event.preventDefault();
+
+                var sKey = $('#sKey').val();
+                var code = $('#code').val();
+
+                if (sKey.trim() === '') {
+                    showError("Can not get the secret key.");
+                    return;
+                }
+
+                if (code.trim() === '') {
+                    showError("Invalid code. Please re-enter the code.");
+                    return;
+                }
+
+                // Submit the form
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("CodeValidation", "Totp")",
+                    data: { sKey: sKey, code: code },
+                    success: function (data) {
+                        $('#errorContainer').hide();
+                        $('#errorContainer').text('');
+                        $('#errorContainer').removeClass('alert alert-danger');
+
+                        // Handle success
+                        if (data.success) {
+                            $('#validationMessage').html(data.message);
+                            window.location.href = data.redirectUrl;
+                        } else {
+                            showError(data.message);
+                        }
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        showError(jqXHR.responseText);
+                    }
+                });
+            });
+
+            function showError(message) {
+                $('#errorContainer').text(message);
+                $('#errorContainer').addClass('alert alert-danger');
+                $('#errorContainer').show();
+            }
+        });
+    </script>
+}

@@ -1,0 +1,90 @@
+﻿@{
+    ViewBag.Title = "SignUp";
+}
+
+<h3>Sign Up:</h3>
+<div class="row mt-5 mx-lg-5">
+    <div class="col-md-6">
+        <div class="mb-3 row">
+            <label for="username" class="col-sm-2 col-form-label">Name</label>
+            <div class="col-sm-10">
+                <input type="text" required class="form-control" id="username" name="name" value="Abbas">
+            </div>
+        </div>
+        <div class="mb-3 row">
+            <label for="email" class="col-sm-2 col-form-label">Email</label>
+            <div class="col-sm-10">
+                <input type="text" required class="form-control" id="email" name="email" value="email@example.com">
+            </div>
+        </div>
+        <div class="mb-3 row">
+            <label for="inputPassword" class="col-sm-2 col-form-label">Password</label>
+            <div class="col-sm-10">
+                <input type="password" required class="form-control" id="inputPassword" name="password">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <button type="button" id="createAccountBtn" class="btn btn-primary mb-3" style="position: relative;margin-left: 195px;">Create New Account</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <a href="@Url.Action("Login", "Totp")">Already have an account?</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="errorMessage" style="color: red; display: none;"></div>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            $('#createAccountBtn').click(function () {
+                var name = $('#username').val();
+                var email = $('#email').val();
+                var password = $('#inputPassword').val();
+
+                // Store the values entered by the user
+                var storedName = name;
+                var storedEmail = email;
+
+                // Check if name or email is empty
+                if (name.trim() === '') {
+                    $('#errorMessage').html("Name is missing. Please enter your name").show();
+                    return;
+                }
+
+                if (email.trim() === '') {
+                    $('#errorMessage').html("Email is missing. Please enter your email").show();
+                    return;
+                }
+
+                if (password.trim() === '') {
+                    $('#errorMessage').html("Password is missing. Please enter your password").show();
+                    return;
+                }
+
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("CreateNewAccount", "Totp")",
+                    data: { name: name, email: email, password: password },
+                    success: function (data) {
+                        if (data.success) {
+                            window.location.href = data.redirectUrl;
+                        } else {
+                            $('#errorMessage').html("An error occurred while processing your request. " + data.message).show();
+                        }
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        // Restore the values entered by the user
+                        $('#username').val(storedName);
+                        $('#email').val(storedEmail);
+                        $('#errorMessage').html("An error occurred while processing your request").show();
+                    }
+                });
+            });
+        });
+    </script>
+}

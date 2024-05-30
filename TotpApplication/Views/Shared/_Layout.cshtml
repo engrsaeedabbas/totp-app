@@ -17,9 +17,29 @@
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">                       
+                <div class="navbar-collapse collapse d-sm-inline-flex">
+                    <ul class="navbar-nav d-flex align-items-end flex-grow-1">
+                        
                     </ul>
+                    <div class="d-flex">
+                        @if(Session.GetInstance().CurrentUser != null)
+                        {
+                            <div class="dropdown">
+                                <a class="dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Me
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                    <li><a class="dropdown-item" href="@Url.Action("Index", "Home")">My Account</a></li>
+                                    @if (!Session.GetInstance().CurrentUser.IsTotpEnabled)
+                                    {
+                                        <li><a class="dropdown-item" href="@Url.Action("CodeValidation", "Totp")">Enable 2FA</a></li>
+                                    }
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a href="#" onclick="logout()" class="dropdown-item">Log Out</a></li>
+                                </ul>
+                            </div>
+                        }
+                    </div>
                 </div>
             </div>
         </nav>
@@ -39,5 +59,14 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
+    <script>
+        function logout() {
+            // Add your logout actions here
+            // For example, setting isCodeValidated to false
+            //Session.GetInstance().CurrentUser.IsCodeValidated = false;
+            // Redirect to logout URL
+            window.location.href = "@Url.Action("Logout", "Totp")";
+        }
+    </script>
 </body>
 </html>

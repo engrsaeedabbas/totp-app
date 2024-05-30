@@ -1,0 +1,12 @@
+﻿@{
+    ViewBag.Title = "My Account";
+}
+<h3>Welcome @Session.GetInstance().CurrentUser.Name</h3>
+@if (Session.GetInstance().CurrentUser.IsTotpEnabled)
+{
+    <p style="color: green;">Your 2FA is active</p>
+}
+else
+{
+    <p style="color: red;">Your 2FA is inactive</p>
+}
